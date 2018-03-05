@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Class-Path: commons-lang-2.3.jar fastjson-1.2.31.jar activation-1.1.1.
+ jar libs/commons-logging-1.0.4.jar libs/commons-email-1.4.jar libs/co
+ mmons-codec-1.9.jar libs/commons-io-2.2.jar libs/javax.mail-1.5.2.jar
+  libs/commons-fileupload-1.3.1.jar libs/commons-httpclient-3.1.jar li
+ bs/freemarker-2.3.23.jar libs/commons-cli-1.2.jar libs/commons-lang3-
+ 3.1.jar
+Main-Class: com.credithc.spider.TemplateMain
+
