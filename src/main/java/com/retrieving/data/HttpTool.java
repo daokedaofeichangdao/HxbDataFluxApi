@@ -1,4 +1,4 @@
-package com.credithc.spider;
+package com.retrieving.data;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
@@ -10,7 +10,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.log4j.Logger;
+
+
+
 public class HttpTool {
+    private static Logger log = Logger.getLogger(HttpTool.class);
 
     /**
      * 发送post请求
@@ -20,7 +25,7 @@ public class HttpTool {
      * @return 返回结果
      * @throws IOException
      */
-    public static String sendPost(String params, String requestUrl) {
+    public static void sendPost(String params, String requestUrl) {
 
         try {
             byte[] requestBytes = params.getBytes("utf-8"); // 将参数转为二进制流
@@ -44,12 +49,10 @@ public class HttpTool {
                 e.printStackTrace();
             }
             String result = new String(datas, "UTF-8");// 将二进制流转为String
-            // 打印返回结果
-            // System.out.println(result);
-
-            return result;
+            log.info("Request return result:" + result);
         } catch (IOException e) {
-            return null;
+            log.error("Send the request exception" + e.getMessage());
+
         }
     }
 

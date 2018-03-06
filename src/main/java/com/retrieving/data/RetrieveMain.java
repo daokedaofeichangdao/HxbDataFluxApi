@@ -1,4 +1,4 @@
-package com.credithc.spider;
+package com.retrieving.data;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,6 +47,7 @@ public class RetrieveMain {
     private String url;
     private File[] files = null;
 
+
     public void postEntrance() {
         // 读取配置文件
         Properties properties = new Properties();
@@ -56,18 +57,19 @@ public class RetrieveMain {
             path = (String) properties.get("path");
             fileName = (String) properties.get("fileName");
             url = (String) properties.get("url");
-            if (readerFilesPath == null || StringUtils.isBlank(readerFilesPath) || path == null || StringUtils.isBlank(path) || fileName == null || StringUtils.isBlank(fileName) || url == null || StringUtils.isBlank(url)) {
-                log.error("config.properties" + "配置文件内容错误");
+            if (StringUtils.isBlank(readerFilesPath) || StringUtils.isBlank(path) || StringUtils.isBlank(fileName) || StringUtils.isBlank(url)) {
+                log.warn("config.properties" + "配置文件内容错误,程序运行结束;");
             } else {
                 if (checkFileExist()) {
                     createFile(fileName, path);
                     af1001.stream().forEach(it -> {
-                        System.out.print("00000000000000000000000000000000000000000" + it);
                         HttpTool.sendPost(it, url);
                     });
                     af1002.stream().forEach(it -> {
                         HttpTool.sendPost(it, url);
                     });
+                } else {
+                    log.warn(readerFilesPath + "目录下不存在文件,程序运行结束;");
                 }
             }
         } catch (IOException e) {
@@ -76,9 +78,9 @@ public class RetrieveMain {
     }
 
     /**
-     * 读取文件
+     * 检查文件
      *
-     * @return true 文件存在
+     * @return true 目录路径下存在文件
      * false 文件不存在
      */
     private boolean checkFileExist() {
@@ -103,17 +105,24 @@ public class RetrieveMain {
         Date now = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         String currentTime = dateFormat.format(now);
-        fileNamePath = tpath + fileName + currentTime + ".txt";
-        File f = new File(fileNamePath);
-        if (f.exists()) {
-            f.delete();
+        fileNamePath = tpath + "\\" + fileName + currentTime + ".txt";
+        File fPath = new File(tpath);
+        if (!fPath.exists()) {
+            fPath.mkdirs();
         }
+            File f = new File(fileNamePath);
+            if (f.exists()) {
+                f.delete();
+            }
         try {
-            f.createNewFile();
-            writeFileContent();
-        } catch (IOException e) {
-            log.error(fileNamePath + ":" + "Error creating file" + e.getMessage());
-        }
+                f.createNewFile();
+                writeFileContent();
+            } catch (IOException e) {
+                log.error(fileNamePath + ":" + "Error creating file" + e.getMessage());
+            }
+
+
+
     }
 
     /**
@@ -134,14 +143,11 @@ public class RetrieveMain {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(files[i])));
                     while (reader.ready()) {
                         String readerLine = reader.readLine();
-                        String regEx = ":\\{\"applicants\":.*";
+                        String regEx = "\\{\"applicants\":.*";
                         Pattern p = Pattern.compile(regEx);
                         Matcher matcher = p.matcher(readerLine);
-
                         while (matcher.find()) {
                             k = k + 1;
-                            matcher.groupCount();
-                            System.out.print(matcher.group() + "\n");
                             if (matcher.group().contains("AF1001")) {
                                 af1001.add(matcher.group());
                             } else {
